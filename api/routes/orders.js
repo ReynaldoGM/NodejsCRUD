@@ -58,9 +58,7 @@ router.post('/', (req, res, next) => {
 router.get('/:orderId', (req, res, next) => {
 
       var id = req.params.orderId;
-
       var quey = con.query('SELECT * FROM orders where ordenId = ?', [req.params.orderId], function(error,result){
-
         if(error){
           throw error;
         }else{
@@ -73,6 +71,43 @@ router.get('/:orderId', (req, res, next) => {
 
       });
 });
+
+router.patch('/:ordenId', (req, res, next) => {
+  const id = req.params.ordenId;
+  const order = {
+      quantity : req.body.quantity,
+      productId: req.body.productId
+  };
+  if(!order.quantity||!order.productId){
+    res.status(400).json({
+      message: 'Faltan parametros o son incorrectos',
+    });
+  }else if(!Number.isInteger(order.quantity)){
+      res.status(400).json({
+
+        message: 'order debe de ser entero y sin comillas'
+      });
+    }else{
+        var query = con.query('UPDATE orders set cantidad = ?, productId = ? where ordenId = ?',[order.quantity,order.productId, req.params.ordenId],function(error,result){
+
+          if(error){
+            throw error;
+
+          }else{
+              res.status(200).json({
+                message:'Orden Actualizada',
+                id: id,
+                Orden: order
+              });
+
+          }
+        });
+    }
+//    res.status(200).json({
+//        message: 'Updated product!'
+//    });
+});
+
 
 router.delete('/:orderId', (req, res, next) => {
     res.status(200).json({
