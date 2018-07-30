@@ -110,10 +110,27 @@ router.patch('/:ordenId', (req, res, next) => {
 
 
 router.delete('/:orderId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Order deleted',
-        orderId: req.params.orderId
+const  id = req.params.orderId;
+
+var query = con.query('DELETE from orders where ordenId = ? ', [req.params.orderId], function(error,result){
+  if(error){
+    throw error;
+  }else if(result.affectedRows == 0){
+    res.status(404).json({
+      message: 'No existe el Id de la orden'
+
     });
+  }else{
+    res.status(200).json({
+      message: 'Order deleted',
+      orderId: id,
+      respuesta: result.message
+    });
+
+  }
+
+
+});
 });
 
 module.exports = router;
